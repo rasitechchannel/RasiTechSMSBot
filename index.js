@@ -28,7 +28,7 @@ try {
 bot.onText(/\/start/, (msg) => {
     console.log(msg)
     const chatId = msg.chat.id;
-    bot.sendMessage(chatId, 'Selamat datang! Gunakan perintah /send untuk mengirim pesan.');
+    bot.sendMessage(chatId, 'Selamat datang! Gunakan perintah /send untuk mengirim pesan.\n\nCreated By @RasiTechChannl1');
 });
 
 bot.onText(/\/addsaldo (\d+) (\d+)/, (msg, match) => {
