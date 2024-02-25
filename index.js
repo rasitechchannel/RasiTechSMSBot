@@ -6,7 +6,7 @@ const axios = require('axios');
 
 
 const token = '';
-const apiEndpoint = 'https://websms.co.id/api/smsgateway';
+const apiEndpoint = 'http://websms.co.id/api/smsgateway';
 const TOKEN_KAMU = '';
 
 const bot = new TelegramBot(token, {polling: true});
@@ -17,6 +17,10 @@ const balancesFile = 'balances.json';
 
 let pendingMessages = {};
 
+const adminId = YOUR_ID; // Ganti dengan ID admin yang sesuai
+let isPublic = true; // Setel ke true jika ingin memungkinkan akses publik
+
+
 
 try {
     const data = fs.readFileSync(balancesFile);
@@ -25,16 +29,53 @@ try {
     console.error('Error reading balances file:', error.message);
 }
 
+bot.onText(/\/profile/, (msg) => {
+    const chatId = msg.chat.id;
+    const userId = msg.from.id.toString();
+    if (isPublic || msg.from.id === adminId) {
+
+    if (userBalances[userId]) {
+        const userName = msg.from.username || '-';
+        const fullName = msg.from.first_name + (msg.from.last_name ? ' ' + msg.from.last_name : '');
+
+        const profileText = `**Profil Pengguna**\n\n` +
+            `ID: ${userId}\n` +
+            `Username: ${userName}\n` +
+            `Nama: ${fullName}\n` +
+            `Saldo: ${userBalances[userId]}`;
+
+        bot.sendMessage(chatId, profileText, { parse_mode: 'Markdown' });
+    } else {
+        bot.sendMessage(chatId, 'Anda belum memiliki saldo.');
+    }
+} else {
+    bot.sendMessage(chatId, 'Anda tidak memiliki izin untuk menggunakan perintah ini.');
+}
+});
+
+
 bot.onText(/\/start/, (msg) => {
     console.log(msg)
+    
     const chatId = msg.chat.id;
-    bot.sendMessage(chatId, 'Selamat datang! Gunakan perintah /send untuk mengirim pesan.\n\nCreated By @RasiTechChannl1');
+    if (isPublic || msg.from.id === adminId) {
+
+    bot.sendMessage(chatId, 'Selamat datang! Gunakan perintah /send untuk mengirim pesan.\n\nKetik /profile untuk melihat status');
+} else {
+    bot.sendMessage(chatId, 'Anda tidak memiliki izin untuk menggunakan perintah ini.');
+}
 });
 
 bot.onText(/\/addsaldo (\d+) (\d+)/, (msg, match) => {
     const chatId = msg.chat.id;
     const userId = match[1];
     const saldoToAdd = parseInt(match[2]);
+
+    // Periksa apakah pengguna yang memanggil perintah adalah admin
+    if (msg.from.id !== adminId) {
+        bot.sendMessage(chatId, 'Anda tidak memiliki izin untuk menggunakan perintah ini.');
+        return;
+    }
 
     if (!isNaN(saldoToAdd) && saldoToAdd > 0) {
         if (!userBalances[userId]) {
@@ -43,15 +84,17 @@ bot.onText(/\/addsaldo (\d+) (\d+)/, (msg, match) => {
 
         userBalances[userId] += saldoToAdd;
         fs.writeFileSync(balancesFile, JSON.stringify(userBalances));
-        
+
         bot.sendMessage(chatId, `Saldo untuk user ${userId} telah ditambahkan sebesar ${saldoToAdd}.`);
     } else {
         bot.sendMessage(chatId, 'Format perintah /addsaldo salah. Gunakan /addsaldo USERID SALDO');
     }
-}); 
+});
 
 bot.onText(/\/send/, (msg) => {
     const chatId = msg.chat.id;
+    if (isPublic || msg.from.id === adminId) {
+
 
     bot.sendMessage(chatId, 'Masukkan Nomor (08xxxx):', {
         reply_markup: {
@@ -91,6 +134,9 @@ bot.onText(/\/send/, (msg) => {
             });
         });
     });
+} else {
+    bot.sendMessage(chatId, 'Anda tidak memiliki izin untuk menggunakan perintah ini.');
+}
 });
 
 bot.on('callback_query', (query) => {
@@ -102,12 +148,15 @@ bot.on('callback_query', (query) => {
 
         handleSendMessage(chatId, to, text);
 
-        // Remove the inline keyboard
+        // Remove the "Kirim" button but keep the "Tutup" button
         bot.editMessageReplyMarkup({
             chat_id: chatId,
             message_id: messageId,
             reply_markup: {
-                inline_keyboard: [],
+                inline_keyboard: [
+                    // You can customize the structure based on your needs
+                    [{ text: 'Tutup', callback_data: 'cancel' }],
+                ],
             },
         });
     } else if (query.data === 'cancel') {
