@@ -5,9 +5,9 @@ const axios = require('axios');
 
 
 
-const token = ''; // Ganti dengan Token Bot yang sesuai
+const token = 'YOUR_BOT_TOKEN'; // Ganti dengan Token Bot yang sesuai
 const apiEndpoint = 'http://websms.co.id/api/smsgateway';
-const TOKEN_KAMU = '';  // Ganti dengan Token WebSms yang sesuai
+const TOKEN_KAMU = 'YOUR_WEBSMS_TOKEN';  // Ganti dengan Token WebSms yang sesuai
 
 const bot = new TelegramBot(token, {polling: true});
 
@@ -17,7 +17,7 @@ const balancesFile = 'balances.json';
 
 let pendingMessages = {};
 
-const adminId = YOUR_ID; // Ganti dengan ID admin yang sesuai
+const adminId = 5996430596; // Ganti dengan ID admin yang sesuai
 let isPublic = true; // Setel ke true jika ingin memungkinkan akses publik
 
 
@@ -149,12 +149,12 @@ bot.on('callback_query', (query) => {
         handleSendMessage(chatId, to, text);
 
         // Remove the "Kirim" button but keep the "Tutup" button
-        bot.editMessageReplyMarkup({
+        bot.editMessageText('Pesan berhasil dikirim.', {
             chat_id: chatId,
             message_id: messageId,
             reply_markup: {
                 inline_keyboard: [
-                    // You can customize the structure based on your needs
+                    // Customize the structure based on your needs
                     [{ text: 'Tutup', callback_data: 'cancel' }],
                 ],
             },
