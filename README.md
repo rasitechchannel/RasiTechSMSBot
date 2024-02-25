@@ -67,8 +67,17 @@ Ini adalah bot Telegram sederhana yang dibangun dengan Node.js menggunakan pusta
    ```javascript
    const token = 'YOUR_BOT_TOKEN';
    ```
+   
+4. **Konfigurasi Perizinan:**
 
-4. **Konfigurasi Token WebSMS:**
+   Buka file `index.js` dan gantilah variabel `adminId` dengan ID Telegram Anda yang sebenarnya dan `isPublic`.
+
+   ```javascript
+   const adminId = 5996430596; // Ganti dengan ID admin yang sesuai
+   let isPublic = true; // Setel ke true jika ingin memungkinkan akses publik
+   ```
+   
+5. **Konfigurasi Token WebSMS:**
 
    - Buka [websms.co.id](https://websms.co.id).
    - Login atau register akun.
@@ -79,7 +88,7 @@ Ini adalah bot Telegram sederhana yang dibangun dengan Node.js menggunakan pusta
    const TOKEN_KAMU = 'YOUR_WEBSMS_TOKEN';
    ```
 
-5. **Jalankan Bot:**
+6. **Jalankan Bot:**
 
    ```bash
    node index.js
