@@ -5,9 +5,9 @@ const axios = require('axios');
 
 
 
-const token = '';
+const token = ''; // Ganti dengan Token Bot yang sesuai
 const apiEndpoint = 'http://websms.co.id/api/smsgateway';
-const TOKEN_KAMU = '';
+const TOKEN_KAMU = '';  // Ganti dengan Token WebSms yang sesuai
 
 const bot = new TelegramBot(token, {polling: true});
 
